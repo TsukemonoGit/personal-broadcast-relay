@@ -24,13 +24,35 @@ make -j4
 したら
 リレーが起動する
 
-- `./strfry stream wss://relay.example.com`
+- 読み専リレー:`./strfry stream wss://relay.example.com`
 で別のリレーの情報を取得する
 
-- `./strfry stream wss://relay.example.com --dir up`
+- 書き専リレー:`./strfry stream wss://relay.example.com --dir up`
 で別のリレーにブロードキャストする
 
-- `./strfry stream wss://relay.example.com --dir both`
+- 読書両方:`./strfry stream wss://relay.example.com --dir both`
 で書き込みも読み込みもする
 
 **別のリレーから読み込んだ情報もこのリレーに書き込まれてしまうため安易にbothにしないこと**
+
+
+
+### 設定ファイル-strfry.confを編集する
+
+`bind = "127.0.0.1"`の部分を`bind = "0.0.0.0"`にする
+
+```
+(略)
+relay {
+    # Interface to listen on. Use 0.0.0.0 to listen on all interfaces (restart required)
+    bind = "0.0.0.0" //←ここ
+
+    # Port to open for the nostr websocket protocol (restart required)
+    port = 7777
+
+    # Set OS-limit on maximum number of open files/sockets (if 0, don't attempt to set) (restart required)
+    nofiles = 1000000
+(略)
+```
+
+## tailscaleの設定
