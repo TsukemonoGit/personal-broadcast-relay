@@ -56,3 +56,7 @@ relay {
 ```
 
 ## tailscaleの設定
+各機器でチュートリアルのとおりにやってconnectedが出るとこまでやる
+
+DNS⇨
+HTTPS Certificates Dnable HTTPS...を押さないとだめかも
