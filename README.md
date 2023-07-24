@@ -68,4 +68,7 @@ HTTPS Certificates Dnable HTTPS...を押さないとだめかも
 ## データの確認
 ./strfry export > ファイル名.jsonl　で任意のファイル名に出力できる。
 
+jsonl（JSON LINES）
+「[」と「]」による囲みが無いのと、「｛」「｝」の間に「,」がないところがJSONとの違い
+
 export終わってもとのデータいらないならstrfry-dbの中のファイル消せばいい？
