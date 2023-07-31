@@ -17,7 +17,7 @@ tailscaleを使うことによる通信量しらんけど
 sudo apt install -y git build-essential libyaml-perl libtemplate-perl libregexp-grammars-perl libssl-dev zlib1g-dev liblmdb-dev libflatbuffers-dev libsecp256k1-dev libzstd-dev
 git submodule update --init
 make setup-golpe
-make -j4
+make -j4    //-j4はプロセスの数の指定。メモリ足りないエラーが出たら -4j を外す
 ```
 して
 `./strfry relay`
@@ -54,6 +54,9 @@ relay {
     nofiles = 1000000
 (略)
 ```
+
+### Write Policy
+(plugins)[https://github.com/hoytech/strfry/blob/master/docs/plugins.md]
 
 ## tailscaleの設定
 各機器でチュートリアルのとおりにやってconnectedが出るとこまでやる
