@@ -56,7 +56,7 @@ relay {
 ```
 
 ### Write Policy
-(plugins)[https://github.com/hoytech/strfry/blob/master/docs/plugins.md]
+[plugins](https://github.com/hoytech/strfry/blob/master/docs/plugins.md)
 
 ## tailscaleの設定
 各機器でチュートリアルのとおりにやってconnectedが出るとこまでやる
