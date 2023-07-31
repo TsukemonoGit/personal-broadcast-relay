@@ -1,3 +1,23 @@
+strfryの起動にメモリ4g以上必要そう
+
+https://nostr.com/note1n8c30yurxnqd6r9qdkpqf8u4spj2ydzughk0j5a66n0sy3ps9vhqqx7tqr
+
+https://nostr.com/note1zgvt8as744qufgallldvtvhkgcqlkx965mkw8qltvmdfh7unmlhsp9q3cf
+
+swapの設定
+
+http://www.momobro.com/rasbro/tips-rp-swap-management/
+
+これやって/var/swap 　1048572
+
+Swap: １Gi担ったこと確認できたけど
+
+strfry error: mdb_env_open: cannot allocate memoryエラー消えず
+
+./strfry relayも
+./strfry stream .... up もだめ
+
+
 # strfry-tailscale
 Nostrのリレーstrfryとtailscaleを使ってお一人様リレーを立てる
 
