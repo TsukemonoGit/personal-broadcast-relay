@@ -95,3 +95,27 @@ jsonl（JSON LINES）
 「[」と「]」による囲みが無いのと、「｛」「｝」の間に「,」がないところがJSONとの違い
 
 export終わってもとのデータいらないならstrfry-dbの中のファイル消せばいい？
+
+
+----------
+# tailscaleを使わない
+[darashiさんの🥦RTA](https://gist.github.com/darashi/0173182e2740a56985a871440c465df2)を使わせていただく
+
+- denoをインストール[deno_installation](https://deno.land/manual@v1.35.3/getting_started/installation)
+  適当なところで```curl -fsSL https://deno.land/x/install/install.sh | sh```
+
+- 適当なフォルダに🥦のmain.tsを置く
+
+- 適当にrelayのとことかpubkey(hex)のこ編集する
+
+- main.tsをおいたフォルダで```deno run main.ts```する
+
+- なんか色々いいかどうか聞いてくるのでy（yes）ってする
+
+- http://localhost:8000につながる！
+
+- ws://localhost:8000につながる！
+
+- 最初にこのリレーに投稿しようとしたときもコンソールになんか色々いい？って聞かれるからy(yes)ってする
+
+- 
