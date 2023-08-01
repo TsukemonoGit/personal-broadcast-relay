@@ -105,6 +105,15 @@ export終わってもとのデータいらないならstrfry-dbの中のファ�
   適当なところで
 
   ```curl -fsSL https://deno.land/x/install/install.sh | sh```
+  raspberry pi でやろうとしたら
+
+  ```Error: Official Deno builds for Linux aarch64 are not available. (see: https://github.com/denoland/deno/issues/1846 )
+```
+
+ってでたから
+てきとうに
+```cargo install deno --locked```
+てしたけど
 
 - 適当なフォルダに🥦のmain.tsを置く
 
