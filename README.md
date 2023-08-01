@@ -144,4 +144,9 @@ export終わってもとのデータいらないならstrfry-dbの中のファ�
  
 
 
-  cess to fetch at 'http://localhost:8000/' from origin 'https://nostr-bookmark-viewer3.vercel.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+ 8月 01 19:56:03 raspberrypi tailscaled[688]: http: TLS handshake error from 100.71.195.26:46666: SetDNS "_acme-challenge.raspberrypi.tail33f1c.ts.net" => "GntwzLFCtCYph6kkfM_Mgi4_vUJ3Rlq8fmCo1Gs-pK0": set-dns response: 400 Bad Request, domain does not have HTTPS enabled
+ 8月 01 19:56:05 raspberrypi tailscaled[688]: Accept: TCP{100.64.19.57:44836 > 100.71.195.26:8000} 74 tcp non-syn
+ 8月 01 19:56:05 raspberrypi tailscaled[688]: Accept: TCP{100.71.195.26:8000 > 100.64.19.57:44836} 52 ok out
+ 8月 01 19:56:05 raspberrypi tailscaled[688]: magicsock: disco: node [NOm1e] d:ad17b8dc8eec565b now using [2405:6586:5100:3700:483f:f055:d35a:7c19]:48106
+ 8月 01 19:56:05 raspberrypi tailscaled[688]: Accept: TCP{100.64.19.57:44836 > 100.71.195.26:8000} 74 tcp non-syn
+
