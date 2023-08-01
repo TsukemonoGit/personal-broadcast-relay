@@ -140,13 +140,11 @@ export終わってもとのデータいらないならstrfry-dbの中のファ�
 
 ### tailscale側の設定
 - ws://→wss://にする
- ```sudo tailscale serve https:8445 / http://localhost:8000```
- 
+ ```sudo tailscale serve https:8443 / http://localhost:8000```
+または ```sudo tailscale serve https / http://localhost:8000```
 
 
- 8月 01 19:56:03 raspberrypi tailscaled[688]: http: TLS handshake error from 100.71.195.26:46666: SetDNS "_acme-challenge.raspberrypi.tail33f1c.ts.net" => "GntwzLFCtCYph6kkfM_Mgi4_vUJ3Rlq8fmCo1Gs-pK0": set-dns response: 400 Bad Request, domain does not have HTTPS enabled
- 8月 01 19:56:05 raspberrypi tailscaled[688]: Accept: TCP{100.64.19.57:44836 > 100.71.195.26:8000} 74 tcp non-syn
- 8月 01 19:56:05 raspberrypi tailscaled[688]: Accept: TCP{100.71.195.26:8000 > 100.64.19.57:44836} 52 ok out
- 8月 01 19:56:05 raspberrypi tailscaled[688]: magicsock: disco: node [NOm1e] d:ad17b8dc8eec565b now using [2405:6586:5100:3700:483f:f055:d35a:7c19]:48106
- 8月 01 19:56:05 raspberrypi tailscaled[688]: Accept: TCP{100.64.19.57:44836 > 100.71.195.26:8000} 74 tcp non-syn
+- HTTPS Certificatesをenableにしないと``` journalctl -u tailscaled -f
+```でログをみたときにhttp: TLS handshake error 〜〜〜response: 400 Bad Request, domain does not have HTTPS enabledってでる
+
 
