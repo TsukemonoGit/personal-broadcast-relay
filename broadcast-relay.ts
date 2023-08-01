@@ -48,13 +48,13 @@ app.get("/", (c) => {
      software:"git+gttps://github.com/tsukemonogit/personal-broadcast",
      supported_nips:[11],
      version:"0.0.1",
-     limitation:{
-   max_message_length:"",
-   max_subscriptions:"",
-   max_filters:"",
-   auth_required:false,
-   payment_required:false
-   }
+  //    limitation:{
+  //  max_message_length:"",
+  //  max_subscriptions:"",
+  //  max_filters:"",
+  //  auth_required:false,
+  //  payment_required:false
+  //  }
      }, {
     headers: {
       "Access-Control-Allow-Origin": "*",
