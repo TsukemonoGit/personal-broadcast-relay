@@ -84,7 +84,7 @@ relay {
 DNS⇨
 HTTPS Certificates Dnable HTTPS...を押さないとだめかも
 
-
+https://nostr.com/note15jh50kg9slddr3ezwashp3phunej785uyykhtma5zr7dtetnljwqnh6nek
 
 
 ----
