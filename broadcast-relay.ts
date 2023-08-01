@@ -18,7 +18,14 @@ const ALLOWED_AUTHORS = new Set<string>([
 const DESTINATION_RELAYS: string[] = [
   // TODO put your destination relays here
   // "wss://relay.example.com"
-  "wss://nos.lol"
+  "wss://nos.lol",
+  "wss://relay-jp.nostr.wirednet.jp",
+  "wss://nostr.fediverse.jp",
+  "wss://relay.nostr.moctane.com",
+  "wss://nostr.bitcoiner.social",
+  "wss://nostr-pub.wellorder.net",
+  "wss://yabu.me",
+  
 ];
 
 app.use("*", logger());
