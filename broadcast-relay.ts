@@ -61,7 +61,7 @@ app.get("/", (c) => {
     },
   });
 }else{
-  return c.text("[personal-broadcast-relay] please use a Nostr client to connect.");
+  return c.text("[personal-broadcast-relay]\nplease use a Nostr client to connect.");
   }
 }
   const { socket, response } = Deno.upgradeWebSocket(c.req.raw);
