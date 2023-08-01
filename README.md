@@ -137,4 +137,11 @@ export終わってもとのデータいらないならstrfry-dbの中のファ�
 
 - 最初にこのリレーに投稿しようとしたときもコンソールになんか色々いい？って聞かれるからy(yes)ってする
 
-- 
+
+### tailscale側の設定
+- ws://→wss://にする
+ ```sudo tailscale serve https:8445 / http://localhost:8000```
+ 
+
+
+  cess to fetch at 'http://localhost:8000/' from origin 'https://nostr-bookmark-viewer3.vercel.app' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
