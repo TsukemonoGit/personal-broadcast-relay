@@ -45,7 +45,7 @@ app.get("/", (c) => {
      description:"personal broadcast relay",
      name: "🥦",
      pubkey:"84b0c46ab699ac35eb2ca286470b85e081db2087cdef63932236c397417782f5",
-     software:"git+gttps://github.com/tsukemonogit/personal-broadcast",
+     software:"https://github.com/TsukemonoGit/personal-broadcast-relay.git",
      supported_nips:[11],
      version:"0.0.1",
   //    limitation:{
