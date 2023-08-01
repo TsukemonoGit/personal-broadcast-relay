@@ -102,7 +102,9 @@ export終わってもとのデータいらないならstrfry-dbの中のファ�
 [darashiさんの🥦RTA](https://gist.github.com/darashi/0173182e2740a56985a871440c465df2)を使わせていただく
 
 - denoをインストール[deno_installation](https://deno.land/manual@v1.35.3/getting_started/installation)
-  適当なところで```curl -fsSL https://deno.land/x/install/install.sh | sh```
+  適当なところで
+
+  ```curl -fsSL https://deno.land/x/install/install.sh | sh```
 
 - 適当なフォルダに🥦のmain.tsを置く
 
