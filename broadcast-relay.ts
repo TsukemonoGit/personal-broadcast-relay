@@ -11,7 +11,8 @@ const app = new Hono();
 // Pubkeys
 const ALLOWED_AUTHORS = new Set<string>([
   // TODO put your pubkeys **hex in lowercase**
-  "84b0c46ab699ac35eb2ca286470b85e081db2087cdef63932236c397417782f5"
+  "84b0c46ab699ac35eb2ca286470b85e081db2087cdef63932236c397417782f5",
+  "5650178597525e90ea16a4d7a9e33700ac238a1be9dbf3f5093862929d9a1e60"
 ]);
 
 // Relays
@@ -31,16 +32,38 @@ const DESTINATION_RELAYS: string[] = [
 app.use("*", logger());
 
 app.get("/", (c) => {
+  
   if (c.req.headers.get("upgrade") !== "websocket") {
+    const userAgent=c.req.headers.get("Accept");
+    console.log(userAgent);
+    if(userAgent && userAgent.includes("application/nostr+json")){ 
     // TODO implement NIP-11
  
-   return c.json({ message: "please use a Nostr client to connect." }, {
+   return c.json({ 
+    
+     contact:"mono",
+     description:"personal broadcast relay",
+     name: "🥦",
+     pubkey:"84b0c46ab699ac35eb2ca286470b85e081db2087cdef63932236c397417782f5",
+     software:"git+gttps://github.com/tsukemonogit/personal-broadcast",
+     supported_nips:[11],
+     version:"0.0.1",
+     limitation:{
+   max_message_length:"",
+   max_subscriptions:"",
+   max_filters:"",
+   auth_required:false,
+   payment_required:false
+   }
+     }, {
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
   });
-
+}else{
+  return c.text("[personal-broadcast-relay] please use a Nostr client to connect.");
   }
+}
   const { socket, response } = Deno.upgradeWebSocket(c.req.raw);
 
   socket.addEventListener("open", (_e) => {
