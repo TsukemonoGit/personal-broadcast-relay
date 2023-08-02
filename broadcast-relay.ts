@@ -89,40 +89,36 @@ app.get("/", (c) => {
     let res: string = "";
     let issuccess: boolean = false;
     let completedRelays = 0; // 返答を待っているリレーの数
-
-    for (const relay of DESTINATION_RELAYS) {
-      try {
+    const relayPromises = DESTINATION_RELAYS.map((relay) =>
+      new Promise<void>((resolve) => {
         const ws = new WebSocket(relay);
-        await new Promise<void>((resolve) => {
-          ws.addEventListener("open", () => {
-            console.log(`[${relay}] Connected`);
-            ws.send(e.data);
-            console.log(`[${relay}] Sent ${e.data}`);
-          });
 
-          ws.addEventListener("message", (e) => {
-            const event = JSON.parse(e.data);
-            // ... your existing code ...
-
-            completedRelays++; // リレーからの返答が来たのでカウントを増やす
-
-            if (completedRelays === DESTINATION_RELAYS.length) {
-              // すべてのリレーからの返答が揃ったら、socket.sendする
-              console.log(res);
-              socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
-              ws.close(); // Close the WebSocket after all responses are received
-              resolve(); // Resolve the Promise to continue with the next relay
-            }
-          });
+        ws.addEventListener("open", () => {
+          console.log(`[${relay}] Connected`);
+          ws.send(e.data);
+          console.log(`[${relay}] Sent ${e.data}`);
         });
-      } catch (error) {
-        console.error(`[${relay}] Error: ${error.message}`);
-        completedRelays++; // Even if there's an error, count it as a completed relay
-      }
-    }
+
+        ws.addEventListener("message", (e) => {
+          const event = JSON.parse(e.data);
+          // ... your existing code ...
+
+          completedRelays++; // リレーからの返答が来たのでカウントを増やす
+
+          if (completedRelays === DESTINATION_RELAYS.length) {
+            // すべてのリレーからの返答が揃ったら、socket.sendする
+            console.log(res);
+            socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
+            ws.close(); // Close the WebSocket after all responses are received
+            resolve(); // Resolve the Promise to continue with the next relay
+          }
+        });
+      })
+    );
+
+    await Promise.all(relayPromises);
   } else if (event[0] === "REQ") {
-    console.log("REQきたで")
-   // socket.send(["NOTICE", "Unauthorized EVENT"]);
+    console.log("REQきたで");
     socket.send(JSON.stringify(["EOSE", event[1]]));
     return;
   } else {
