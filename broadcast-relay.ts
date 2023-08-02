@@ -110,7 +110,7 @@ app.get("/", (c) => {
           if (completedRelays === DESTINATION_RELAYS.length) {
             // すべてのリレーからの返答が揃ったら、socket.sendする
             clearTimeout(timeoutId); // Clear the timeout as we got all responses
-            console.log(res);
+            console.log(`res: ${res}`);
             socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
             ws.close(); // Close the WebSocket after all responses are received
             resolve(); // Resolve the Promise to continue with the next relay
@@ -121,7 +121,7 @@ app.get("/", (c) => {
 
     const timeoutPromise = new Promise<void>((resolve) => {
       // Set a timeout to send the response if all relays do not respond within the given time (e.g., 10 seconds)
-      const TIMEOUT_MS = 10000;
+      const TIMEOUT_MS = 3000;
       timeoutId = setTimeout(() => {
         console.log("Timeout: Some relays did not respond within the time limit.");
         socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
