@@ -89,6 +89,8 @@ app.get("/", (c) => {
     let res: string = "";
     let issuccess: boolean = false;
     let completedRelays = 0; // 返答を待っているリレーの数
+    let timeoutId: number | undefined = undefined;
+
     const relayPromises = DESTINATION_RELAYS.map((relay) =>
       new Promise<void>((resolve) => {
         const ws = new WebSocket(relay);
@@ -107,6 +109,7 @@ app.get("/", (c) => {
 
           if (completedRelays === DESTINATION_RELAYS.length) {
             // すべてのリレーからの返答が揃ったら、socket.sendする
+            clearTimeout(timeoutId); // Clear the timeout as we got all responses
             console.log(res);
             socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
             ws.close(); // Close the WebSocket after all responses are received
@@ -116,7 +119,17 @@ app.get("/", (c) => {
       })
     );
 
-    await Promise.all(relayPromises);
+    const timeoutPromise = new Promise<void>((resolve) => {
+      // Set a timeout to send the response if all relays do not respond within the given time (e.g., 10 seconds)
+      const TIMEOUT_MS = 10000;
+      timeoutId = setTimeout(() => {
+        console.log("Timeout: Some relays did not respond within the time limit.");
+        socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
+        resolve();
+      }, TIMEOUT_MS);
+    });
+
+    await Promise.all([...relayPromises, timeoutPromise]);
   } else if (event[0] === "REQ") {
     console.log("REQきたで");
     socket.send(JSON.stringify(["EOSE", event[1]]));
