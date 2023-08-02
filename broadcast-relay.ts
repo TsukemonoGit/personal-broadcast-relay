@@ -79,7 +79,8 @@ app.get("/", (c) => {
       if (!ALLOWED_AUTHORS.has(message.pubkey)) {
         console.log("Unauthorized EVENT");
         // TODO return NOTICE
-        return ["NOTICE","Unauthorized EVENT"];
+        response.json(["NOTICE","Unauthorized EVENT"]);
+        return response
       }
 
       // TODO validate sig here. Better after checking pubkey to reduce unnecessary calculations.
@@ -96,7 +97,8 @@ app.get("/", (c) => {
         });
       }
     }else if(event[0]==='REQ'){
-      return ["EOSE",event[1]];
+      response.json(["EOSE",event[1]]);
+      return response;
     }
   });
 
