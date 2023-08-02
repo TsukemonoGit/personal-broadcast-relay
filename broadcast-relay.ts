@@ -26,6 +26,7 @@ const DESTINATION_RELAYS: string[] = [
   "wss://nostr.bitcoiner.social",
   "wss://nostr-pub.wellorder.net",
   "wss://yabu.me",
+  "wss://r.kojira.io"
   
 ];
 
