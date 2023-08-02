@@ -128,10 +128,12 @@ app.get("/", (c) => {
 
     const timeoutPromise = new Promise<void>((resolve) => {
       // Set a timeout to send the response if all relays do not respond within the given time (e.g., 10 seconds)
-      const TIMEOUT_MS = 3000;
+      const TIMEOUT_MS = 2000;
       timeoutId = setTimeout(() => {
         console.log("Timeout: Some relays did not respond within the time limit.");
+      if(socket.readyState === WebSocket.OPEN){
         socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
+      }
         resolve();
       }, TIMEOUT_MS);
     });
