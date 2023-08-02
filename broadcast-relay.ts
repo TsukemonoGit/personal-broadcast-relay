@@ -125,6 +125,8 @@ app.get("/", (c) => {
    // socket.send(["NOTICE", "Unauthorized EVENT"]);
     socket.send(["EOSE", event[1]]);
     return;
+  } else {
+    console.log(event);
   }
 });
 
