@@ -114,7 +114,7 @@ app.get("/", (c) => {
 
           completedRelays++; // リレーからの返答が来たのでカウントを増やす
 
-          if (completedRelays === DESTINATION_RELAYS.length) {
+          if (completedRelays === DESTINATION_RELAYS.length && socket.readyState === WebSocket.OPEN) {
             // すべてのリレーからの返答が揃ったら、socket.sendする
             clearTimeout(timeoutId); // Clear the timeout as we got all responses
             console.log(`res: ${res}`);
