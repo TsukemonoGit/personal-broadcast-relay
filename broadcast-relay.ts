@@ -80,7 +80,7 @@ app.get("/", (c) => {
         console.log("Unauthorized EVENT");
         // TODO return NOTICE
         //socket.send(["NOTICE","Unauthorized EVENT"]);
-        socket.send(["OK",event[1],false,"Unauthorized EVENT"]);
+        socket.send([["OK",event[1],false,"Unauthorized EVENT"]]);
         return ;
       }
 
@@ -116,14 +116,14 @@ app.get("/", (c) => {
         if (completedRelays === DESTINATION_RELAYS.length) {
           // すべてのリレーからの返答が揃ったら、socket.sendする
           console.log(res);
-          socket.send(["OK", event[1], issuccess, res]);
+          socket.send([["OK", event[1], issuccess, res]]);
         }
       });
     }
   } else if (event[0] === "REQ") {
     console.log("REQきたで")
    // socket.send(["NOTICE", "Unauthorized EVENT"]);
-    socket.send(["EOSE", event[1]]);
+    socket.send([["EOSE", event[1]]]);
     return;
   } else {
     console.log(event);
