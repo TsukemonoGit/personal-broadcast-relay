@@ -78,7 +78,7 @@ app.get("/", (c) => {
       if (!ALLOWED_AUTHORS.has(message.pubkey)) {
         console.log("Unauthorized EVENT");
         // TODO return NOTICE
-        return;
+        return ["NOTICE","Unauthorized EVENT"];
       }
 
       // TODO validate sig here. Better after checking pubkey to reduce unnecessary calculations.
@@ -94,6 +94,8 @@ app.get("/", (c) => {
           console.log(`[${relay}] Closed`);
         });
       }
+    }else if(event[0]==='REQ'){
+      return ["EOSE",event[1]];
     }
   });
 
