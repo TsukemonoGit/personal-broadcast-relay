@@ -132,6 +132,7 @@ app.get("/", (c) => {
 
   socket.addEventListener("close", (_e) => {
     console.log("WebSocket closed");
+    socket.close(); // WebSocket接続をクローズ
   });
 
   return response;
