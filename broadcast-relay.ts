@@ -79,8 +79,8 @@ app.get("/", (c) => {
       if (!ALLOWED_AUTHORS.has(message.pubkey)) {
         console.log("Unauthorized EVENT");
         // TODO return NOTICE
-        socket.send(["NOTICE","Unauthorized EVENT"]);
-        socket.send(["ok",event[1],false,"Unauthorized EVENT"]);
+        //socket.send(["NOTICE","Unauthorized EVENT"]);
+        socket.send(["OK",event[1],false,"Unauthorized EVENT"]);
         return ;
       }
 
@@ -122,7 +122,7 @@ app.get("/", (c) => {
     }
   } else if (event[0] === "REQ") {
     console.log("REQきたで")
-    socket.send(["NOTICE", "Unauthorized EVENT"]);
+   // socket.send(["NOTICE", "Unauthorized EVENT"]);
     socket.send(["EOSE", event[1]]);
     return;
   }
