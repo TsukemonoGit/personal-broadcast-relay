@@ -101,6 +101,7 @@ app.get("/", (c) => {
       });
       ws.addEventListener("message", (e) => {
         const event = JSON.parse(e.data);
+        console.log(event);
         if (event[0] === "ok" && event[2]) {
           issuccess = true;
           res = res + `[${relay}] send ok`;
