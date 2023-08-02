@@ -104,11 +104,11 @@ app.get("/", (c) => {
         //console.log(event);
         if (event[0] === "OK" && event[2]) {
           issuccess = true;
-          res = res +', '+ `[${relay} send ok]`;
+          res = res+ `[${relay} send ok]`;
           console.log(`[${relay}] send success`);
         } else if (event[0] === "OK" && !event[2]) {
           console.log(`[${relay}] send false`);
-          res = res +', '+ `[${relay} send failed]`;
+          res = res +`[${relay} send failed]`;
         }
 
         completedRelays++; // リレーからの返答が来たのでカウントを増やす
@@ -121,6 +121,7 @@ app.get("/", (c) => {
       });
     }
   } else if (event[0] === "REQ") {
+    console.log("REQきたで")
     socket.send(["NOTICE", "Unauthorized EVENT"]);
     socket.send(["EOSE", event[1]]);
     return;
