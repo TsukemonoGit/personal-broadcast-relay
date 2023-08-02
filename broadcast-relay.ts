@@ -101,20 +101,21 @@ app.get("/", (c) => {
       });
       ws.addEventListener("message", (e) => {
         const event = JSON.parse(e.data);
-        console.log(event);
-        if (event[0] === "ok" && event[2]) {
+        //console.log(event);
+        if (event[0] === "OK" && event[2]) {
           issuccess = true;
-          res = res + `[${relay}] send ok`;
-          console.log(`[${relay}] send ok`);
-        } else if (event[0] === "ok" && !event[2]) {
+          res = res +', '+ `[${relay} send ok]`;
+          console.log(`[${relay}] send success`);
+        } else if (event[0] === "OK" && !event[2]) {
           console.log(`[${relay}] send false`);
-          res = res + `[${relay}]:failed`;
+          res = res +', '+ `[${relay} send failed]`;
         }
 
         completedRelays++; // リレーからの返答が来たのでカウントを増やす
 
         if (completedRelays === DESTINATION_RELAYS.length) {
           // すべてのリレーからの返答が揃ったら、socket.sendする
+          console.log(res);
           socket.send(["ok", event[1], issuccess, res]);
         }
       });
