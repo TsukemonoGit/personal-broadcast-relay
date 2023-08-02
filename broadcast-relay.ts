@@ -130,7 +130,7 @@ app.get("/", (c) => {
   }
 });
 
-  socket.addEventListener("close", (_e) => {
+  socket.addEventListener("CLOSE", (_e) => {
     console.log("WebSocket closed");
     socket.close(); // WebSocket接続をクローズ
   });
