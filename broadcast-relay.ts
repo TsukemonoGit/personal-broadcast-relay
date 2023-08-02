@@ -80,28 +80,50 @@ app.get("/", (c) => {
         console.log("Unauthorized EVENT");
         // TODO return NOTICE
         socket.send(["NOTICE","Unauthorized EVENT"]);
+        socket.send(["ok",event[1],false,"Unauthorized EVENT"]);
         return ;
       }
 
-      // TODO validate sig here. Better after checking pubkey to reduce unnecessary calculations.
-      // Even if you don't validate, there's a good chance that the relay or the other client will validate...
-      for (const relay of DESTINATION_RELAYS) {
-        // TODO keep connections to destination relays open
-        const ws = new WebSocket(relay);
-        ws.addEventListener("open", () => {
-          console.log(`[${relay}] Connected`);
-          ws.send(e.data);
-          console.log(`[${relay}] Sent ${e.data}`);
-          ws.close();
-          console.log(`[${relay}] Closed`);
-        });
-      }
-    }else if(event[0]==='REQ'){
-      socket.send(["NOTICE","Unauthorized EVENT"]);
-      socket.send(["EOSE",event[1]]);
-      return  ;
+         // TODO validate sig here. Better after checking pubkey to reduce unnecessary calculations.
+    // Even if you don't validate, there's a good chance that the relay or the other client will validate...
+    let res: string = "";
+    let issuccess: boolean = false;
+    let completedRelays = 0; // 返答を待っているリレーの数
+
+    for (const relay of DESTINATION_RELAYS) {
+      // TODO keep connections to destination relays open
+      const ws = new WebSocket(relay);
+      ws.addEventListener("open", () => {
+        console.log(`[${relay}] Connected`);
+        ws.send(e.data);
+        console.log(`[${relay}] Sent ${e.data}`);
+        // ws.close(); // この行は削除
+      });
+      ws.addEventListener("message", (e) => {
+        const event = JSON.parse(e.data);
+        if (event[0] === "ok" && event[2]) {
+          issuccess = true;
+          res = res + `[${relay}] send ok`;
+          console.log(`[${relay}] send ok`);
+        } else if (event[0] === "ok" && !event[2]) {
+          console.log(`[${relay}] send false`);
+          res = res + `[${relay}]:failed`;
+        }
+
+        completedRelays++; // リレーからの返答が来たのでカウントを増やす
+
+        if (completedRelays === DESTINATION_RELAYS.length) {
+          // すべてのリレーからの返答が揃ったら、socket.sendする
+          socket.send(["ok", event[1], issuccess, res]);
+        }
+      });
     }
-  });
+  } else if (event[0] === "REQ") {
+    socket.send(["NOTICE", "Unauthorized EVENT"]);
+    socket.send(["EOSE", event[1]]);
+    return;
+  }
+});
 
   socket.addEventListener("close", (_e) => {
     console.log("WebSocket closed");
