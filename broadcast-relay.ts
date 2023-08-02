@@ -116,7 +116,7 @@ app.get("/", (c) => {
         if (completedRelays === DESTINATION_RELAYS.length) {
           // すべてのリレーからの返答が揃ったら、socket.sendする
           console.log(res);
-          socket.send(["ok", event[1], issuccess, res]);
+          socket.send(["OK", event[1], issuccess, res]);
         }
       });
     }
