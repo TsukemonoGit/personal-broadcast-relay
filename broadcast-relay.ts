@@ -29,8 +29,7 @@ const DESTINATION_RELAYS: string[] = [
   "wss://r.kojira.io"
 
 ];
-// リレーへの WebSocket インスタンスを事前に作成
-const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
+
 
 app.use("*", logger());
 
@@ -73,6 +72,9 @@ app.get("/", (c) => {
     console.log("WebSocket opened");
   });
 
+  // リレーへの WebSocket インスタンスを事前に作成
+  const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
+
   socket.addEventListener("message", async (e) => {
     const event = JSON.parse(e.data);
     if (event[0] === "EVENT") {
@@ -92,6 +94,8 @@ app.get("/", (c) => {
       let issuccess: boolean = false;
       let completedRelays = 0; // 返答を待っているリレーの数
       let timeoutId: number | undefined = undefined;
+
+
 
       // リレーへのメッセージ送信を並列化
       const relayPromises = relaySockets.map((ws, index) =>
