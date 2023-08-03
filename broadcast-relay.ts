@@ -72,8 +72,7 @@ app.get("/", (c) => {
     console.log("WebSocket opened");
   });
 
-  // リレーへの WebSocket インスタンスを事前に作成
-  const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
+
 
   socket.addEventListener("message", async (e) => {
     const event = JSON.parse(e.data);
@@ -95,6 +94,8 @@ app.get("/", (c) => {
       let completedRelays = 0; // 返答を待っているリレーの数
       let timeoutId: number | undefined = undefined;
 
+      // リレーへの WebSocket インスタンスを事前に作成
+      const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
 
 
       // リレーへのメッセージ送信を並列化
@@ -102,11 +103,11 @@ app.get("/", (c) => {
         new Promise<void>((resolve) => {
 
 
-        ws.addEventListener("open", (item) => {
-          console.log(`[${DESTINATION_RELAYS[index]}] Connected`);
-          ws.send(e.data);
-          console.log(`[${item}] Sent ${e.data}`);
-        });
+          ws.addEventListener("open", (item) => {
+            console.log(`[${DESTINATION_RELAYS[index]}] Connected`);
+            ws.send(e.data);
+            console.log(`[${item}] Sent ${e.data}`);
+          });
 
 
           ws.addEventListener("message", (e) => {
