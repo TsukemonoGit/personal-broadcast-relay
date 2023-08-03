@@ -27,7 +27,7 @@ const DESTINATION_RELAYS: string[] = [
   "wss://nostr-pub.wellorder.net",
   "wss://yabu.me",
   "wss://r.kojira.io"
-  
+
 ];
 // リレーへの WebSocket インスタンスを事前に作成
 const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
@@ -35,38 +35,38 @@ const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
 app.use("*", logger());
 
 app.get("/", (c) => {
-  
+
   if (c.req.headers.get("upgrade") !== "websocket") {
-    const userAgent=c.req.headers.get("Accept");
+    const userAgent = c.req.headers.get("Accept");
     console.log(userAgent);
-    if(userAgent && userAgent.includes("application/nostr+json")){ 
-    // TODO implement NIP-11
- 
-   return c.json({ 
-    
-     contact:"mono",
-     description:"personal broadcast relay",
-     name: "🥦",
-     pubkey:"84b0c46ab699ac35eb2ca286470b85e081db2087cdef63932236c397417782f5",
-     software:"https://github.com/TsukemonoGit/personal-broadcast-relay.git",
-     supported_nips:[11,20],
-     version:"0.0.1",
-  //    limitation:{
-  //  max_message_length:"",
-  //  max_subscriptions:"",
-  //  max_filters:"",
-  //  auth_required:false,
-  //  payment_required:false
-  //  }
-     }, {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
-}else{
-  return c.text("[personal-broadcast-relay]\nplease use a Nostr client to connect.");
+    if (userAgent && userAgent.includes("application/nostr+json")) {
+      // TODO implement NIP-11
+
+      return c.json({
+
+        contact: "mono",
+        description: "personal broadcast relay",
+        name: "🥦",
+        pubkey: "84b0c46ab699ac35eb2ca286470b85e081db2087cdef63932236c397417782f5",
+        software: "https://github.com/TsukemonoGit/personal-broadcast-relay.git",
+        supported_nips: [11, 20],
+        version: "0.0.1",
+        //    limitation:{
+        //  max_message_length:"",
+        //  max_subscriptions:"",
+        //  max_filters:"",
+        //  auth_required:false,
+        //  payment_required:false
+        //  }
+      }, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    } else {
+      return c.text("[personal-broadcast-relay]\nplease use a Nostr client to connect.");
+    }
   }
-}
   const { socket, response } = Deno.upgradeWebSocket(c.req.raw);
 
   socket.addEventListener("open", (_e) => {
@@ -82,18 +82,18 @@ app.get("/", (c) => {
         console.log("Unauthorized EVENT");
         // TODO return NOTICE
         //socket.send(["NOTICE","Unauthorized EVENT"]);
-        socket.send(JSON.stringify(["OK",event[1],false,"Unauthorized EVENT"]));
-        return ;
+        socket.send(JSON.stringify(["OK", event[1], false, "Unauthorized EVENT"]));
+        return;
       }
 
-         // TODO validate sig here. Better after checking pubkey to reduce unnecessary calculations.
-    // Even if you don't validate, there's a good chance that the relay or the other client will validate...
-    let res: string = "";
-    let issuccess: boolean = false;
-    let completedRelays = 0; // 返答を待っているリレーの数
-    let timeoutId: number | undefined = undefined;
+      // TODO validate sig here. Better after checking pubkey to reduce unnecessary calculations.
+      // Even if you don't validate, there's a good chance that the relay or the other client will validate...
+      let res: string = "";
+      let issuccess: boolean = false;
+      let completedRelays = 0; // 返答を待っているリレーの数
+      let timeoutId: number | undefined = undefined;
 
-  // リレーへのメッセージ送信を並列化
+      // リレーへのメッセージ送信を並列化
       const relayPromises = relaySockets.map((ws, index) =>
         new Promise<void>((resolve) => {
           ws.addEventListener("message", (e) => {
@@ -126,10 +126,11 @@ app.get("/", (c) => {
       );
 
       // 送信タイムアウト処理
-      const TIMEOUT_MS = 2000;
+      const TIMEOUT_MS = 3000;
       const timeoutPromise = new Promise<void>((resolve) => {
         timeoutId = setTimeout(() => {
           console.log("Timeout: Some relays did not respond within the time limit.");
+          console.log(`res: ${res}`);
           resolve();
         }, TIMEOUT_MS);
       });
@@ -142,13 +143,13 @@ app.get("/", (c) => {
         ws.close();
       }
     } else if (event[0] === "REQ") {
-    console.log("REQきたで");
-    socket.send(JSON.stringify(["EOSE", event[1]]));
-    return;
-  } else {
-    console.log(event);
-  }
-});
+      console.log("REQきたで");
+      socket.send(JSON.stringify(["EOSE", event[1]]));
+      return;
+    } else {
+      console.log(event);
+    }
+  });
 
   socket.addEventListener("CLOSE", (_e) => {
     console.log("WebSocket closed");
