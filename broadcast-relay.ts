@@ -4,8 +4,7 @@
 
 import { Hono } from "https://deno.land/x/hono@v3.3.0/mod.ts";
 import { logger } from "https://deno.land/x/hono@v3.3.0/middleware.ts";
-import { Lock } from "https://deno.land/x/async_lock/mod.ts";
-const lock=new Lock();
+
 const app = new Hono();
 
 // Pubkeys
@@ -96,12 +95,18 @@ app.get("/", (c) => {
 
       // リレーへの WebSocket インスタンスを事前に作成
       const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
+
+      const lockMap = new Map<string, boolean>();
+
       const lock = async (key: string, action: () => void | Promise<void>) => {
-        const release = await Deno.lock(key);
+        while (lockMap.get(key)) {
+          await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+        lockMap.set(key, true);
         try {
           await action();
         } finally {
-          release();
+          lockMap.set(key, false);
         }
       };
 
@@ -128,6 +133,7 @@ app.get("/", (c) => {
               res += `[${DESTINATION_RELAYS[index]} send failed]`;
             }
 
+
             // ロックを取得してカウントを行う
             await lock(`relay-lock-${index}`, async () => {
               completedRelays++; // リレーからの応答が来たのでカウントを増やす
@@ -139,7 +145,6 @@ app.get("/", (c) => {
                 resolve(); // 次のリレーに進むために Promise を解決
               }
             });
-
 
 
           });
