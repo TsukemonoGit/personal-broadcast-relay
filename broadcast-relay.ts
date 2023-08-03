@@ -4,8 +4,10 @@
 
 import { Hono } from "https://deno.land/x/hono@v3.3.0/mod.ts";
 import { logger } from "https://deno.land/x/hono@v3.3.0/middleware.ts";
+// al.ts
+import { Lock } from "https://deno.land/x/async_lock/mod.ts";
 
-
+const lock = new Lock();
 const app = new Hono();
 
 // Pubkeys
@@ -121,17 +123,21 @@ app.get("/", (c) => {
               res += `[${DESTINATION_RELAYS[index]} send failed]`;
             }
 
-            completedRelays++; // リレーからの返答が来たのでカウントを増やす
+            // ロックを取得してカウントを行う
+            lock.acquire(`relay-lock-${index}`, () => {
+              completedRelays++; // リレーからの応答が来たのでカウントを増やす
 
-            if (completedRelays === DESTINATION_RELAYS.length && socket.readyState === WebSocket.OPEN) {
-              clearTimeout(timeoutId); // タイムアウトをクリア
-              console.log(`res: ${res}`);
-              socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
-              resolve(); // 次のリレーに進むために Promise を解決
-            }
+              if (completedRelays === DESTINATION_RELAYS.length && socket.readyState === WebSocket.OPEN) {
+                clearTimeout(timeoutId); // タイムアウトをクリア
+                console.log(`res: ${res}`);
+                socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
+                resolve(); // 次のリレーに進むために Promise を解決
+              }
+            });
+
+
+
           });
-
-         
         })
       );
 
