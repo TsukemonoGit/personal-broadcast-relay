@@ -29,6 +29,8 @@ const DESTINATION_RELAYS: string[] = [
   "wss://r.kojira.io"
   
 ];
+// リレーへの WebSocket インスタンスを事前に作成
+const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
 
 app.use("*", logger());
 
@@ -91,55 +93,55 @@ app.get("/", (c) => {
     let completedRelays = 0; // 返答を待っているリレーの数
     let timeoutId: number | undefined = undefined;
 
-    const relayPromises = DESTINATION_RELAYS.map((relay) =>
-      new Promise<void>((resolve) => {
-        const ws = new WebSocket(relay);
+  // リレーへのメッセージ送信を並列化
+      const relayPromises = relaySockets.map((ws, index) =>
+        new Promise<void>((resolve) => {
+          ws.addEventListener("message", (e) => {
+            const relayEvent = JSON.parse(e.data);
+            if (relayEvent[0] === "OK" && relayEvent[2]) {
+              issuccess = true;
+              res += `[${DESTINATION_RELAYS[index]} send ok]`;
+              console.log(`[${DESTINATION_RELAYS[index]}] send success`);
+            } else if (relayEvent[0] === "OK" && !relayEvent[2]) {
+              console.log(`[${DESTINATION_RELAYS[index]}] send false`);
+              res += `[${DESTINATION_RELAYS[index]} send failed]`;
+            }
 
-        ws.addEventListener("open", () => {
-          console.log(`[${relay}] Connected`);
-          ws.send(e.data);
-          console.log(`[${relay}] Sent ${e.data}`);
-        });
+            completedRelays++; // リレーからの返答が来たのでカウントを増やす
 
-        ws.addEventListener("message", (e) => {
-          const event = JSON.parse(e.data);
-          if (event[0] === "OK" && event[2]) {
-            issuccess = true;
-            res = res+ `[${relay} send ok]`;
-            console.log(`[${relay}] send success`);
-          } else if (event[0] === "OK" && !event[2]) {
-            console.log(`[${relay}] send false`);
-            res = res +`[${relay} send failed]`;
-          }
+            if (completedRelays === DESTINATION_RELAYS.length && socket.readyState === WebSocket.OPEN) {
+              clearTimeout(timeoutId); // タイムアウトをクリア
+              console.log(`res: ${res}`);
+              socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
+              resolve(); // 次のリレーに進むために Promise を解決
+            }
+          });
 
-          completedRelays++; // リレーからの返答が来たのでカウントを増やす
+          ws.addEventListener("open", () => {
+            console.log(`[${DESTINATION_RELAYS[index]}] Connected`);
+            ws.send(e.data);
+            console.log(`[${DESTINATION_RELAYS[index]}] Sent ${e.data}`);
+          });
+        })
+      );
 
-          if (completedRelays === DESTINATION_RELAYS.length && socket.readyState === WebSocket.OPEN) {
-            // すべてのリレーからの返答が揃ったら、socket.sendする
-            clearTimeout(timeoutId); // Clear the timeout as we got all responses
-            console.log(`res: ${res}`);
-            socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
-            ws.close(); // Close the WebSocket after all responses are received
-            resolve(); // Resolve the Promise to continue with the next relay
-          }
-        });
-      })
-    );
-
-    const timeoutPromise = new Promise<void>((resolve) => {
-      // Set a timeout to send the response if all relays do not respond within the given time (e.g., 10 seconds)
+      // 送信タイムアウト処理
       const TIMEOUT_MS = 2000;
-      timeoutId = setTimeout(() => {
-        console.log("Timeout: Some relays did not respond within the time limit.");
-      if(socket.readyState === WebSocket.OPEN){
-        socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
-      }
-        resolve();
-      }, TIMEOUT_MS);
-    });
+      const timeoutPromise = new Promise<void>((resolve) => {
+        timeoutId = setTimeout(() => {
+          console.log("Timeout: Some relays did not respond within the time limit.");
+          resolve();
+        }, TIMEOUT_MS);
+      });
 
-    await Promise.all([...relayPromises, timeoutPromise]);
-  } else if (event[0] === "REQ") {
+      // リレーへの送信とタイムアウト処理を並列実行
+      await Promise.all([...relayPromises, timeoutPromise]);
+
+      // 事前に作成した WebSocket インスタンスをクローズ
+      for (const ws of relaySockets) {
+        ws.close();
+      }
+    } else if (event[0] === "REQ") {
     console.log("REQきたで");
     socket.send(JSON.stringify(["EOSE", event[1]]));
     return;
