@@ -141,6 +141,9 @@ app.get("/", (c) => {
         timeoutId = setTimeout(() => {
           console.log("Timeout: Some relays did not respond within the time limit.");
           console.log(`res: ${res}`);
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
+          }
           resolve();
         }, TIMEOUT_MS);
       });
