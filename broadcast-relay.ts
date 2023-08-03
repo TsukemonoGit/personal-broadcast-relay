@@ -131,11 +131,7 @@ app.get("/", (c) => {
             }
           });
 
-          ws.addEventListener("open", () => {
-            console.log(`[${DESTINATION_RELAYS[index]}] Connected`);
-            ws.send(e.data);
-            console.log(`[${DESTINATION_RELAYS[index]}] Sent ${e.data}`);
-          });
+         
         })
       );
 
@@ -154,6 +150,7 @@ app.get("/", (c) => {
 
       // 事前に作成した WebSocket インスタンスをクローズ
       for (const ws of relaySockets) {
+        console.log(`res: ${res}`);
         ws.close();
       }
     } else if (event[0] === "REQ") {
