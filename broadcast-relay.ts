@@ -100,6 +100,15 @@ app.get("/", (c) => {
       // リレーへのメッセージ送信を並列化
       const relayPromises = relaySockets.map((ws, index) =>
         new Promise<void>((resolve) => {
+
+
+        ws.addEventListener("open", (item) => {
+          console.log(`[${DESTINATION_RELAYS[index]}] Connected`);
+          ws.send(e.data);
+          console.log(`[${item}] Sent ${e.data}`);
+        });
+
+
           ws.addEventListener("message", (e) => {
             const relayEvent = JSON.parse(e.data);
             if (relayEvent[0] === "OK" && relayEvent[2]) {
