@@ -4,7 +4,8 @@
 
 import { Hono } from "https://deno.land/x/hono@v3.3.0/mod.ts";
 import { logger } from "https://deno.land/x/hono@v3.3.0/middleware.ts";
-
+import { Lock } from "https://deno.land/x/async_lock/mod.ts";
+const lock=new Lock();
 const app = new Hono();
 
 // Pubkeys
