@@ -140,10 +140,15 @@ app.get("/", (c) => {
 
               if (completedRelays === DESTINATION_RELAYS.length && socket.readyState === WebSocket.OPEN) {
                 clearTimeout(timeoutId); // タイムアウトをクリア
-                console.log(`res: ${res}`);
-                socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
-                resolve(); // 次のリレーに進むために Promise を解決
+                
+                
+                console.log(`socket.readyState: ${socket.readyState}`);
+                console.log(`send: ${JSON.stringify(["OK", event[1].id, issuccess, res])}`);
+               
+                socket.send(JSON.stringify(["OK", event[1].id, issuccess, res]));
+               
               }
+               resolve(); // 次のリレーに進むために Promise を解決
             });
 
 
@@ -152,13 +157,17 @@ app.get("/", (c) => {
       );
 
       // 送信タイムアウト処理
-      const TIMEOUT_MS = 3000;
+      const TIMEOUT_MS = 2000;
       const timeoutPromise = new Promise<void>((resolve) => {
         timeoutId = setTimeout(() => {
           console.log("Timeout: Some relays did not respond within the time limit.");
-          console.log(`res: ${res}`);
+         
+          //1だったらOPEN
+          console.log(`socket.readyState: ${socket.readyState}`);
+          console.log(`send: ${JSON.stringify(["OK", event[1].id, issuccess, res])}`);
+             
           if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify(["OK", event[1], issuccess, res]));
+            socket.send(JSON.stringify(["OK", event[1].id, issuccess, res]));
           }
           resolve();
         }, TIMEOUT_MS);
