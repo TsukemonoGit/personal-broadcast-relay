@@ -4,10 +4,7 @@
 
 import { Hono } from "https://deno.land/x/hono@v3.3.0/mod.ts";
 import { logger } from "https://deno.land/x/hono@v3.3.0/middleware.ts";
-// al.ts
-import { Lock } from "https://deno.land/x/async_lock/mod.ts";
 
-const lock = new Lock();
 const app = new Hono();
 
 // Pubkeys
@@ -98,7 +95,14 @@ app.get("/", (c) => {
 
       // リレーへの WebSocket インスタンスを事前に作成
       const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
-
+      const lock = async (key: string, action: () => void | Promise<void>) => {
+        const release = await Deno.lock(key);
+        try {
+          await action();
+        } finally {
+          release();
+        }
+      };
 
       // リレーへのメッセージ送信を並列化
       const relayPromises = relaySockets.map((ws, index) =>
@@ -112,7 +116,7 @@ app.get("/", (c) => {
           });
 
 
-          ws.addEventListener("message", (e) => {
+          ws.addEventListener("message", async (e) => {
             const relayEvent = JSON.parse(e.data);
             if (relayEvent[0] === "OK" && relayEvent[2]) {
               issuccess = true;
@@ -124,7 +128,7 @@ app.get("/", (c) => {
             }
 
             // ロックを取得してカウントを行う
-            lock.acquire(`relay-lock-${index}`, () => {
+            await lock(`relay-lock-${index}`, async () => {
               completedRelays++; // リレーからの応答が来たのでカウントを増やす
 
               if (completedRelays === DESTINATION_RELAYS.length && socket.readyState === WebSocket.OPEN) {
