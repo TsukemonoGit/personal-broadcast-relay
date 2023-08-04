@@ -33,15 +33,17 @@ const DESTINATION_RELAYS: string[] = [
 app.use("*", logger());
 
 app.get("/", (c) => {
+//-------Websocketか、NIP11の要求か、それ以外のパターンでの処理----
+//https://github.com/nostr-protocol/nips/blob/master/11.md
 
   if (c.req.headers.get("upgrade") !== "websocket") {
     const userAgent = c.req.headers.get("Accept");
     console.log(userAgent);
+
     if (userAgent && userAgent.includes("application/nostr+json")) {
-      // TODO implement NIP-11
-
+      // TODO implement NIP-11　
+      
       return c.json({
-
         contact: "mono",
         description: "personal broadcast relay",
         name: "🥦",
@@ -62,19 +64,27 @@ app.get("/", (c) => {
         },
       });
     } else {
+      //ブラウザからアクセスしたとき表示される内容
       return c.text("[personal-broadcast-relay]\nplease use a Nostr client to connect.");
     }
   }
+
+
+  //websocket
   const { socket, response } = Deno.upgradeWebSocket(c.req.raw);
 
   socket.addEventListener("open", (_e) => {
     console.log("WebSocket opened");
   });
 
-
-
   socket.addEventListener("message", async (e) => {
     const event = JSON.parse(e.data);
+
+    // -----event[0]がEVENTかREQかCLOSE------
+    //https://github.com/nostr-protocol/nips/blob/master/01.md#from-client-to-relay-sending-events-and-creating-subscriptions
+    
+    //結果を返すNIP20  https://github.com/nostr-protocol/nips/blob/master/20.md
+    
     if (event[0] === "EVENT") {
       const message = event[1];
       console.log("EVENT", message);
@@ -82,7 +92,7 @@ app.get("/", (c) => {
         console.log("Unauthorized EVENT");
         // TODO return NOTICE
         //socket.send(["NOTICE","Unauthorized EVENT"]);
-        socket.send(JSON.stringify(["OK", event[1], false, "Unauthorized EVENT"]));
+        socket.send(JSON.stringify(["OK", event[1].id, false, "Unauthorized EVENT"]));
         return;
       }
 
@@ -93,9 +103,8 @@ app.get("/", (c) => {
       let completedRelays = 0; // 返答を待っているリレーの数
       let timeoutId: number | undefined = undefined;
 
-      // リレーへの WebSocket インスタンスを事前に作成
-      const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
 
+      // 返答を待っているリレーの数をチェックするための
       const lockMap = new Map<string, boolean>();
 
       const lock = async (key: string, action: () => void | Promise<void>) => {
@@ -110,10 +119,12 @@ app.get("/", (c) => {
         }
       };
 
+      // リレーへの WebSocket インスタンスを事前に作成
+      const relaySockets = DESTINATION_RELAYS.map((relay) => new WebSocket(relay));
+
       // リレーへのメッセージ送信を並列化
       const relayPromises = relaySockets.map((ws, index) =>
         new Promise<void>((resolve) => {
-
 
           ws.addEventListener("open", (item) => {
             console.log(`[${DESTINATION_RELAYS[index]}] Connected`);
@@ -121,11 +132,10 @@ app.get("/", (c) => {
             console.log(`[${item}] Sent ${e.data}`);
           });
 
-
           ws.addEventListener("message", async (e) => {
             const relayEvent = JSON.parse(e.data);
             if (relayEvent[0] === "OK" && relayEvent[2]) {
-              issuccess = true;
+              issuccess = true;   //一箇所にでも送信成功したらtrueを返すとする
               res += `[${DESTINATION_RELAYS[index]} send ok]`;
               console.log(`[${DESTINATION_RELAYS[index]}] send success`);
             } else if (relayEvent[0] === "OK" && !relayEvent[2]) {
@@ -133,24 +143,21 @@ app.get("/", (c) => {
               res += `[${DESTINATION_RELAYS[index]} send failed]`;
             }
 
-
             // ロックを取得してカウントを行う
             await lock(`relay-lock-${index}`, async () => {
               completedRelays++; // リレーからの応答が来たのでカウントを増やす
 
               if (completedRelays === DESTINATION_RELAYS.length && socket.readyState === WebSocket.OPEN) {
                 clearTimeout(timeoutId); // タイムアウトをクリア
-                
-                
-                console.log(`socket.readyState: ${socket.readyState}`);
-                console.log(`send: ${JSON.stringify(["OK", event[1].id, issuccess, res])}`);
-               
-                socket.send(JSON.stringify(["OK", event[1].id, issuccess, res]));
-               
-              }
-               resolve(); // 次のリレーに進むために Promise を解決
-            });
 
+                console.log(`socket.readyState: ${socket.readyState}`);   //1がOPEN
+                console.log(`send: ${JSON.stringify(["OK", event[1].id, issuccess, res])}`);
+
+                socket.send(JSON.stringify(["OK", event[1].id, issuccess, res]));
+
+              }
+              resolve(); // 次のリレーに進むために Promise を解決
+            });
 
           });
         })
@@ -161,11 +168,10 @@ app.get("/", (c) => {
       const timeoutPromise = new Promise<void>((resolve) => {
         timeoutId = setTimeout(() => {
           console.log("Timeout: Some relays did not respond within the time limit.");
-         
-          //1だったらOPEN
-          console.log(`socket.readyState: ${socket.readyState}`);
+
+          console.log(`socket.readyState: ${socket.readyState}`); //1だったらOPEN
           console.log(`send: ${JSON.stringify(["OK", event[1].id, issuccess, res])}`);
-             
+
           if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(["OK", event[1].id, issuccess, res]));
           }
