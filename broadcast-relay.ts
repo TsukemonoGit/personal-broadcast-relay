@@ -33,8 +33,8 @@ const DESTINATION_RELAYS: string[] = [
 app.use("*", logger());
 
 app.get("/", (c) => {
-//-------Websocketか、NIP11の要求か、それ以外のパターンでの処理----
-//https://github.com/nostr-protocol/nips/blob/master/11.md
+  //-------Websocketか、NIP11の要求か、それ以外のパターンでの処理----
+  //https://github.com/nostr-protocol/nips/blob/master/11.md
 
   if (c.req.headers.get("upgrade") !== "websocket") {
     const userAgent = c.req.headers.get("Accept");
@@ -42,7 +42,7 @@ app.get("/", (c) => {
 
     if (userAgent && userAgent.includes("application/nostr+json")) {
       // TODO implement NIP-11　
-      
+
       return c.json({
         contact: "mono",
         description: "personal broadcast relay",
@@ -82,9 +82,9 @@ app.get("/", (c) => {
 
     // -----event[0]がEVENTかREQかCLOSE------
     //https://github.com/nostr-protocol/nips/blob/master/01.md#from-client-to-relay-sending-events-and-creating-subscriptions
-    
+
     //結果を返すNIP20  https://github.com/nostr-protocol/nips/blob/master/20.md
-    
+
     if (event[0] === "EVENT") {
       const message = event[1];
       console.log("EVENT", message);
@@ -188,14 +188,14 @@ app.get("/", (c) => {
         ws.close();
       }
     } else if (event[0] === "REQ") {
-      console.log("REQきたで");
+      console.log(`REQきたで:id[${event[1]}]`);
+      socket.send(JSON.stringify(["NOTICE","なんもないよ"])); //いるかわからんけど
       socket.send(JSON.stringify(["EOSE", event[1]]));
-      return;
-    } else if (event[0]==="CLOSE"){
-      //req来てもすぐEOSEするから来ることないと思うけど
-      console.log("CLOSEきたよ");
-    }else{
-      console.log(event);  
+    } else if (event[0] === "CLOSE") {
+      console.log(`CLOSEきたよ:id[${event[1]}]`);
+      socket.send(JSON.stringify(["NOTICE","なんもないよ"]));//いるかわからんけど
+    } else {
+      console.log(event);
     }
   });
 
