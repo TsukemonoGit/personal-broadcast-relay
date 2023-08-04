@@ -1,5 +1,5 @@
 # personal-broadcast-relay と tailscale
-[darashiさんの🥦RTA](https://gist.github.com/darashi/0173182e2740a56985a871440c465df2)を改造させていただいたものと[tailscale](https://tailscale.com/) を使ってお一人様リレーを立てる
+[darashiさんの🥦RTA](https://gist.github.com/darashi/0173182e2740a56985a871440c465df2)を改造したものと[tailscale](https://tailscale.com/) を使ってお一人様ブロードキャスト専用リレーを立てる
 
 tailscale - あるPCかなにかに立てたローカルリレーとスマホとか別の機器につなげたりできる
 
