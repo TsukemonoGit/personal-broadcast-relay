@@ -191,12 +191,15 @@ app.get("/", (c) => {
       console.log("REQきたで");
       socket.send(JSON.stringify(["EOSE", event[1]]));
       return;
-    } else {
-      console.log(event);
+    } else if (event[0]==="CLOSE"){
+      //req来てもすぐEOSEするから来ることないと思うけど
+      console.log("CLOSEきたよ");
+    }else{
+      console.log(event);  
     }
   });
 
-  socket.addEventListener("CLOSE", (_e) => {
+  socket.addEventListener("close", (_e) => {
     console.log("WebSocket closed");
     socket.close(); // WebSocket接続をクローズ
   });
