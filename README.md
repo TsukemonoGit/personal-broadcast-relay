@@ -1,11 +1,11 @@
 # personal-broadcast-relay と tailscale
-[darashiさんの🥦RTA](https://gist.github.com/darashi/0173182e2740a56985a871440c465df2)を改造したものと[tailscale](https://tailscale.com/) を使ってお一人様ブロードキャスト専用リレーを立てる
+めもめもめもめ
+
+
+[darashiさんの🥦RTA](https://gist.github.com/darashi/0173182e2740a56985a871440c465df2)を改造したものと[tailscale](https://tailscale.com/) を使ってお一人様ブロードキャスト専用リレーたてた
 
 tailscale - あるPCかなにかに立てたローカルリレーとスマホとか別の機器につなげたりできる
 
-
-tailscaleを使うことによる通信量しらんけど
-書き込みリレーを絞ることで通信量の節約になるんじゃないかって
 
 
 # 使い方
